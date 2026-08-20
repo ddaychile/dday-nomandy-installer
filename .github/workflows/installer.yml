@@ -1,0 +1,88 @@
+name: Build Installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      q2pro_tag:
+        description: 'q2pro release tag (ej: v1.2.3)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout installer repo (self)
+        uses: actions/checkout@v4
+
+      # 1. Compilar gamex86.dll desde release-dll
+      - name: Checkout release-dll source
+        uses: actions/checkout@v4
+        with:
+          repository: ddaychile/release-dll
+          path: ./mod_source
+
+      - name: Compile gamex86.dll (MSVC x86 Release)
+        run: |
+          cd ./mod_source
+          call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
+          msbuild dday.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:OutDir="%CD%\..\mod_binaries\" /p:IntDir="%CD%\..\mod_binaries\obj\"
+        shell: cmd
+
+      # 2. Descargar binarios q2pro
+      - name: Download q2pro x64 binaries
+        run: |
+          gh release download ${{ github.event.inputs.q2pro_tag }} --repo q2pro/q2pro --pattern "build-msvc-x64*" --dir ./q2pro_x64
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Download q2pro x86 binaries
+        run: |
+          gh release download ${{ github.event.inputs.q2pro_tag }} --repo q2pro/q2pro --pattern "build-msvc-x86*" --dir ./q2pro_x86
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      # 3. Preparar fuentes del installer
+      - name: Prepare installer sources
+        run: |
+          # Cliente 64-bit
+          copy .\q2pro_x64\q2pro.exe .\Quake2.exe
+          copy .\q2pro_x64\gamex86_64.dll .\gamex86_64.dll
+          copy .\q2pro_x64\*.dll .\
+          
+          # Servidor 32-bit
+          copy .\q2pro_x86\q2proded.exe .\q2proded.exe
+          copy .\q2pro_x86\*.dll .\
+          
+          # Mod gamex86.dll compilado
+          copy .\mod_binaries\gamex86.dll .\Dday Normandy\dday\gamex86.dll
+          
+          # Discord SDK
+          copy .\q2pro_x64\discord_game_sdk.dll .\ 2>nul || echo "Discord SDK no en artifacts"
+
+      # 4. Actualizar versión en .iss
+      - name: Update version in .iss
+        run: |
+          $version = "${{ github.event.inputs.q2pro_tag }}".TrimStart('v')
+          (Get-Content ddayinstaller.iss) -replace '#define MyAppVersion ".*"', '#define MyAppVersion "' + $version + '"' | Set-Content ddayinstaller.iss
+
+      # 5. Compilar installer
+      - name: Install Inno Setup
+        uses: MinionGuy/innosetup-action@v1
+
+      - name: Build Installer
+        run: iscc ddayinstaller.iss
+
+      # 6. Subir artifact
+      - name: Upload Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: DdayNormandy_Setup
+          path: Output/DdayNormandy_Setup.exe
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}

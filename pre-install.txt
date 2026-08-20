@@ -1,0 +1,5 @@
+¡BIENVENIDO A D-DAY: NORMANDY!
+
+Estás a punto de instalar la versión optimizada por la Comunidad Chilena.
+
+Instrucciones: Selecciona la carpeta destino. El instalador creará automáticamente las carpetas necesarias, ya no es necesario usar la carpeta Quake2.

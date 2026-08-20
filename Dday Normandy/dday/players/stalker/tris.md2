@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q2 Dday Normandy 2024 || El regreso !</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="background">
+        <div class="overlay">
+            <nav class="menu">
+                <ul>
+                    <li><a href="/">Inicio</a></li>
+                    <li><a href="/foro">Foro</a></li>
+                    <li><a href="#">Servers</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </nav>
+            <div class="content">
+                <h1>Bienvenido a Dday.cl</h1>
+                <button class="download-btn">
+                  <a href="https://www.dday.cl/descargas/D-Day_ Normandy.exe" download>Descargar D-day</a>
+              </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

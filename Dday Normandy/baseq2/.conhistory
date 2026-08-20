@@ -1,0 +1,12 @@
+\sensitivity 
+\sensitivity 3
+quit
+connect localhost
+reconnect
+quit
+connect localhost
+quit
+\connect localhost
+\screenshotjpg
+bind INS screenshotjpg
+quit
