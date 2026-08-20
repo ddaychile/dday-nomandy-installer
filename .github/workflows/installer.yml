@@ -27,6 +27,16 @@ jobs:
           repository: ddaychile/release-dll
           path: ./mod_source
 
+      - name: Fix hardcoded paths in .vcxproj
+        run: |
+          cd ./mod_source
+          # Reemplazar OutDir hardcodeado por variable
+          (Get-Content dday.vcxproj) -replace 'C:\\\\Quake2\\\\dday\\\\', '$(OutDir)' | Set-Content dday.vcxproj
+          # Asegurar que OutDir apunte a nuestro directorio
+          (Get-Content dday.vcxproj) -replace '<OutDir Condition="\$\(Configuration\)\|\$\(Platform\)\)==\'Release\|Win32\'">C:\\\\Quake2\\\\dday\\\\</OutDir>', '<OutDir Condition="$(Configuration)|$(Platform)==\'Release|Win32\'">..\mod_binaries\</OutDir>' | Set-Content dday.vcxproj
+          (Get-Content dday.vcxproj) -replace '<IntDir Condition="\$\(Configuration\)\|\$\(Platform\)\)==\'Release\|Win32\'">C:\\\\Quake2\\\\dday\\\\</IntDir>', '<IntDir Condition="$(Configuration)|$(Platform)==\'Release|Win32\'">..\mod_binaries\obj\</IntDir>' | Set-Content dday.vcxproj
+        shell: pwsh
+
       - name: Compile gamex86.dll (MSVC x86 Release)
         run: |
           cd ./mod_source
