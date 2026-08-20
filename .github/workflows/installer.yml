@@ -31,7 +31,7 @@ jobs:
         run: |
           cd ./mod_source
           call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
-          msbuild dday.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:OutDir="%CD%\..\mod_binaries\" /p:IntDir="%CD%\..\mod_binaries\obj\"
+          msbuild dday.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:OutDir="..\mod_binaries\" /p:IntDir="..\mod_binaries\obj\"
         shell: cmd
 
       # 2. Descargar binarios q2pro
