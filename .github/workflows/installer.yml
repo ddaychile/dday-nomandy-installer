@@ -71,10 +71,11 @@ jobs:
           $version = "${{ github.event.inputs.q2pro_tag }}".TrimStart('v')
           (Get-Content ddayinstaller.iss) -replace '#define MyAppVersion ".*"', '#define MyAppVersion "' + $version + '"' | Set-Content ddayinstaller.iss
 
-      # 5. Compilar installer
+      # 5. Instalar Inno Setup via Chocolatey
       - name: Install Inno Setup
-        uses: MinionGuy/innosetup-action@v1
+        run: choco install innosetup --version=6.2.2 -y
 
+      # 5. Compilar installer
       - name: Build Installer
         run: iscc ddayinstaller.iss
 
