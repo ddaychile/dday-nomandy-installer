@@ -30,10 +30,7 @@ jobs:
       - name: Fix hardcoded paths in .vcxproj
         run: |
           cd ./mod_source
-          powershell -Command "
-            (Get-Content dday.vcxproj) -replace 'C:\\\\Quake2\\\\dday\\\\', '..\\mod_binaries\\' | Set-Content dday.vcxproj
-          "
-        shell: cmd
+          powershell -NoProfile -Command "(Get-Content dday.vcxproj) -replace 'C:\\\\Quake2\\\\dday\\\\', '..\\mod_binaries\\' | Set-Content dday.vcxproj"
 
       - name: Compile gamex86.dll (MSVC x86 Release)
         run: |
