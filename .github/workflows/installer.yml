@@ -35,9 +35,25 @@ jobs:
       - name: Compile gamex86.dll (MSVC x86 Release)
         run: |
           cd ./mod_source
-          call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
-          "C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\msbuild.exe" dday.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:OutDir="..\mod_binaries\" /p:IntDir="..\mod_binaries\obj\"
-        shell: cmd
+          # Find Visual Studio 2022 installation path
+          $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vsPath) {
+            Write-Error "Visual Studio 2022 with C++ workload not found"
+            exit 1
+          }
+          $msbuildPath = Join-Path $vsPath "Msbuild\Current\Bin\msbuild.exe"
+          if (-not (Test-Path $msbuildPath)) {
+            Write-Error "msbuild.exe not found at $msbuildPath"
+            exit 1
+          }
+          # Setup VS environment
+          $vcvarsPath = Join-Path $vsPath "VC\Auxiliary\Build\vcvarsall.bat"
+          if (-not (Test-Path $vcvarsPath)) {
+            Write-Error "vcvarsall.bat not found at $vcvarsPath"
+            exit 1
+          }
+          cmd /c "call `"$vcvarsPath`" x86 && `"$msbuildPath`" dday.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:OutDir=`"..\mod_binaries\`" /p:IntDir=`"..\mod_binaries\obj\`""
+        shell: pwsh
 
       # 2. Descargar binarios q2pro
       - name: Download q2pro x64 binaries
