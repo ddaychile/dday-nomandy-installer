@@ -24,7 +24,7 @@ jobs:
       - name: Download q2pro x64 binaries
         run: |
           gh release download ${{ github.event.inputs.q2pro_tag }} --repo ddaychile/q2pro --pattern "q2pro-windows-x64.zip" --dir ./q2pro_x64
-          7z x -y .\q2pro_x64\q2pro-windows-x64.zip -o.\q2pro_x64
+          Expand-Archive -Force -Path .\q2pro_x64\q2pro-windows-x64.zip -DestinationPath .\q2pro_x64
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -32,7 +32,7 @@ jobs:
       - name: Download q2pro x86 binaries
         run: |
           gh release download ${{ github.event.inputs.q2pro_tag }} --repo ddaychile/q2pro --pattern "q2pro-windows-x86.zip" --dir ./q2pro_x86
-          7z x -y .\q2pro_x86\q2pro-windows-x86.zip -o.\q2pro_x86
+          Expand-Archive -Force -Path .\q2pro_x86\q2pro-windows-x86.zip -DestinationPath .\q2pro_x86
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
