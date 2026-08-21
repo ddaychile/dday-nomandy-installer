@@ -48,7 +48,7 @@ OutputDir=Output
 OutputBaseFilename=DdayNormandy_Setup
 SetupIconFile=icon.ico
 SolidCompression=yes
-WizardStyle=modern dark windows11
+WizardStyle=modern dark
 WizardImageFile=wizard.bmp
 ; WizardSmallImageFile=small.bmp
 ; Esto hará que la imagen lateral no se estire feo
