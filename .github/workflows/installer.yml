@@ -74,6 +74,22 @@ jobs:
             }
           }
           
+          # Copy baseq2 folder (game data)
+          if (Test-Path ".\q2pro_x64\baseq2") {
+            Copy-Item ".\q2pro_x64\baseq2" .\baseq2 -Recurse -Force
+            Write-Host "baseq2 folder copied"
+          } else {
+            Write-Host "baseq2 folder not found - skipping"
+          }
+          
+          # Copy dday folder (mod data) - already exists in repo but copy from q2pro if available
+          if (Test-Path ".\q2pro_x64\dday") {
+            Copy-Item ".\q2pro_x64\dday" .\dday -Recurse -Force
+            Write-Host "dday folder copied from q2pro"
+          } else {
+            Write-Host "dday folder not found in q2pro - using repo version"
+          }
+          
           $env:ISCC_DEFINES = $isccDefines -join " "
 
       # 4. Actualizar versión en .iss
