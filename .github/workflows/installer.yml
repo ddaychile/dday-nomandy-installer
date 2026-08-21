@@ -9,13 +9,13 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-installer:
     runs-on: windows-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout installer repo (self)
         uses: actions/checkout@v4
@@ -111,11 +111,17 @@ jobs:
           iscc @isccArgs
         shell: pwsh
 
-      # 7. Subir artifact
-      - name: Upload Installer
-        uses: actions/upload-artifact@v4
+      # 7. Crear release con el instalador
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: DdayNormandy_Setup
-          path: Output/DdayNormandy_Setup.exe
+          tag_name: ${{ github.event.inputs.q2pro_tag }}-installer
+          name: "Dday Normandy - ${{ github.event.inputs.q2pro_tag }}"
+          body: "Instalador de Dday Normandy para ${{ github.event.inputs.q2pro_tag }}"
+          files: Output/DdayNormandy_Setup.exe
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
