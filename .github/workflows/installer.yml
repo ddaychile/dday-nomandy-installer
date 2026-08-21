@@ -74,17 +74,19 @@ jobs:
             }
           }
           
-          # baseq2 and dday folders come from repo (already checked out)
-          if (Test-Path ".\baseq2") {
-            Write-Host "baseq2 folder found from repo"
+          # Copy baseq2 and dday from Dday Normandy/ to root (where .iss expects them)
+          if (Test-Path ".\Dday Normandy\baseq2") {
+            Copy-Item ".\Dday Normandy\baseq2" .\baseq2 -Recurse -Force
+            Write-Host "baseq2 folder copied from Dday Normandy/"
           } else {
-            Write-Host "WARNING: baseq2 folder not found in repo"
+            Write-Host "WARNING: baseq2 folder not found in Dday Normandy/"
           }
           
-          if (Test-Path ".\dday") {
-            Write-Host "dday folder found from repo"
+          if (Test-Path ".\Dday Normandy\dday") {
+            Copy-Item ".\Dday Normandy\dday" .\dday -Recurse -Force
+            Write-Host "dday folder copied from Dday Normandy/"
           } else {
-            Write-Host "WARNING: dday folder not found in repo"
+            Write-Host "WARNING: dday folder not found in Dday Normandy/"
           }
           
           $env:ISCC_DEFINES = $isccDefines -join " "
