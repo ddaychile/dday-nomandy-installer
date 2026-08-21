@@ -52,10 +52,7 @@ jobs:
             exit 1
           }
           # Create a batch file to avoid quoting issues
-          $batchContent = @"
-call "$vcvarsPath" x86
-"$msbuildPath" dday.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:OutDir="..\mod_binaries\" /p:IntDir="..\mod_binaries\obj\"
-"@
+          $batchContent = "call `"$vcvarsPath`" x86`n`"$msbuildPath`" dday.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:OutDir=`"..\mod_binaries\`" /p:IntDir=`"..\mod_binaries\obj\`""
           Set-Content -Path build_gamex86.bat -Value $batchContent -Encoding ASCII
           cmd /c build_gamex86.bat
         shell: pwsh
