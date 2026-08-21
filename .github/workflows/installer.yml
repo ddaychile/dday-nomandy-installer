@@ -46,13 +46,18 @@ jobs:
             Write-Error "msbuild.exe not found at $msbuildPath"
             exit 1
           }
-          # Setup VS environment
           $vcvarsPath = Join-Path $vsPath "VC\Auxiliary\Build\vcvarsall.bat"
           if (-not (Test-Path $vcvarsPath)) {
             Write-Error "vcvarsall.bat not found at $vcvarsPath"
             exit 1
           }
-          cmd /c "call `"$vcvarsPath`" x86 && `"$msbuildPath`" dday.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:OutDir=`"..\mod_binaries\`" /p:IntDir=`"..\mod_binaries\obj\`""
+          # Create a batch file to avoid quoting issues
+          $batchContent = @"
+call "$vcvarsPath" x86
+"$msbuildPath" dday.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:OutDir="..\mod_binaries\" /p:IntDir="..\mod_binaries\obj\"
+"@
+          Set-Content -Path build_gamex86.bat -Value $batchContent -Encoding ASCII
+          cmd /c build_gamex86.bat
         shell: pwsh
 
       # 2. Descargar binarios q2pro
