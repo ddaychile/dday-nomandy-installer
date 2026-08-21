@@ -74,20 +74,17 @@ jobs:
             }
           }
           
-          # Copy baseq2 folder (game data)
-          if (Test-Path ".\q2pro_x64\baseq2") {
-            Copy-Item ".\q2pro_x64\baseq2" .\baseq2 -Recurse -Force
-            Write-Host "baseq2 folder copied"
+          # baseq2 and dday folders come from repo (already checked out)
+          if (Test-Path ".\baseq2") {
+            Write-Host "baseq2 folder found from repo"
           } else {
-            Write-Host "baseq2 folder not found - skipping"
+            Write-Host "WARNING: baseq2 folder not found in repo"
           }
           
-          # Copy dday folder (mod data) - already exists in repo but copy from q2pro if available
-          if (Test-Path ".\q2pro_x64\dday") {
-            Copy-Item ".\q2pro_x64\dday" .\dday -Recurse -Force
-            Write-Host "dday folder copied from q2pro"
+          if (Test-Path ".\dday") {
+            Write-Host "dday folder found from repo"
           } else {
-            Write-Host "dday folder not found in q2pro - using repo version"
+            Write-Host "WARNING: dday folder not found in repo"
           }
           
           $env:ISCC_DEFINES = $isccDefines -join " "
