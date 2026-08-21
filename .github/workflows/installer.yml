@@ -52,14 +52,14 @@ jobs:
             exit 1
           }
           # Create MSBuild response file to avoid quoting issues
-          $rspContent = @"
-/p:Configuration=Release
-/p:Platform=Win32
-/p:OutDir=..\mod_binaries\
-/p:IntDir=..\mod_binaries\obj\
-dday.vcxproj
-"@
-          Set-Content -Path build_gamex86.rsp -Value $rspContent -Encoding ASCII
+          $rspLines = @(
+            '/p:Configuration=Release',
+            '/p:Platform=Win32',
+            '/p:OutDir=..\mod_binaries\',
+            '/p:IntDir=..\mod_binaries\obj\',
+            'dday.vcxproj'
+          )
+          Set-Content -Path build_gamex86.rsp -Value ($rspLines -join "`n") -Encoding ASCII
           cmd /c "call `"$vcvarsPath`" x86 && `"$msbuildPath`" @build_gamex86.rsp"
         shell: pwsh
 
