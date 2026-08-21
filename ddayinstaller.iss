@@ -10,6 +10,7 @@
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
+; #define IncludeDiscordSDK   ; Descomenta o pasa /DIncludeDiscordSDK a iscc si existe discord_game_sdk.dll
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -84,7 +85,9 @@ Source: "q2proded.exe"; DestDir: "{app}"; Components: base; Flags: ignoreversion
 
 ; --- DLLs ENGINE 64-bit ---
 Source: "gamex86_64.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#ifdef IncludeDiscordSDK
 Source: "discord_game_sdk.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#endif
 Source: "avformat-63.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
 Source: "avcodec-63.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
 Source: "avutil-61.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion

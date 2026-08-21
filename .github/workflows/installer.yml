@@ -52,6 +52,7 @@ jobs:
           if (Test-Path .\q2pro_x64\discord_game_sdk.dll) {
             Copy-Item .\q2pro_x64\discord_game_sdk.dll .\
             Write-Host "Discord SDK found and copied"
+            $env:HAS_DISCORD_SDK = "1"
           } else {
             Write-Host "Discord SDK not found - skipping (optional)"
           }
@@ -68,7 +69,13 @@ jobs:
 
       # 6. Compilar installer
       - name: Build Installer
-        run: iscc ddayinstaller.iss
+        run: |
+          $isccArgs = @("ddayinstaller.iss")
+          if ($env:HAS_DISCORD_SDK) {
+            $isccArgs += "/DIncludeDiscordSDK"
+          }
+          iscc @isccArgs
+        shell: pwsh
 
       # 7. Subir artifact
       - name: Upload Installer
