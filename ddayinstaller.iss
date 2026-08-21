@@ -10,7 +10,16 @@
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
-; #define IncludeDiscordSDK   ; Descomenta o pasa /DIncludeDiscordSDK a iscc si existe discord_game_sdk.dll
+; #define IncludeDiscordSDK      ; discord_game_sdk.dll
+; #define IncludeAvFormat        ; avformat-63.dll
+; #define IncludeAvCodec         ; avcodec-63.dll
+; #define IncludeAvUtil          ; avutil-61.dll
+; #define IncludeAvFilter        ; avfilter-12.dll
+; #define IncludeAvDevice        ; avdevice-63.dll
+; #define IncludeSwResample      ; swresample-7.dll
+; #define IncludeSwScale         ; swscale-10.dll
+; #define IncludeSDL2            ; SDL2.dll
+; #define IncludeOpenAL32        ; OpenAL32.dll
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -88,15 +97,33 @@ Source: "gamex86_64.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversi
 #ifdef IncludeDiscordSDK
 Source: "discord_game_sdk.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
 #endif
+#ifdef IncludeAvFormat
 Source: "avformat-63.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#endif
+#ifdef IncludeAvCodec
 Source: "avcodec-63.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#endif
+#ifdef IncludeAvUtil
 Source: "avutil-61.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#endif
+#ifdef IncludeAvFilter
 Source: "avfilter-12.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#endif
+#ifdef IncludeAvDevice
 Source: "avdevice-63.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#endif
+#ifdef IncludeSwResample
 Source: "swresample-7.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#endif
+#ifdef IncludeSwScale
 Source: "swscale-10.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#endif
+#ifdef IncludeSDL2
 Source: "SDL2.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#endif
+#ifdef IncludeOpenAL32
 Source: "OpenAL32.dll"; DestDir: "{app}"; Components: base; Flags: ignoreversion
+#endif
 
 ; --- CARPETA BASEQ2 ---
 Source: "baseq2\*"; DestDir: "{app}\baseq2"; Components: base; Flags: ignoreversion recursesubdirs createallsubdirs

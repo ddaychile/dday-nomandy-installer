@@ -48,14 +48,33 @@ jobs:
           copy .\q2pro_x86\q2proded.exe .\q2proded.exe
           copy .\q2pro_x86\*.dll .\
           
-          # Discord SDK (optional)
-          if (Test-Path .\q2pro_x64\discord_game_sdk.dll) {
-            Copy-Item .\q2pro_x64\discord_game_sdk.dll .\
-            Write-Host "Discord SDK found and copied"
-            $env:HAS_DISCORD_SDK = "1"
-          } else {
-            Write-Host "Discord SDK not found - skipping (optional)"
+          # Check optional DLLs and build iscc defines
+          $isccDefines = @()
+          
+          $optionalDlls = @{
+            "discord_game_sdk.dll" = "IncludeDiscordSDK"
+            "avformat-63.dll" = "IncludeAvFormat"
+            "avcodec-63.dll" = "IncludeAvCodec"
+            "avutil-61.dll" = "IncludeAvUtil"
+            "avfilter-12.dll" = "IncludeAvFilter"
+            "avdevice-63.dll" = "IncludeAvDevice"
+            "swresample-7.dll" = "IncludeSwResample"
+            "swscale-10.dll" = "IncludeSwScale"
+            "SDL2.dll" = "IncludeSDL2"
+            "OpenAL32.dll" = "IncludeOpenAL32"
           }
+          
+          foreach ($dll in $optionalDlls.Keys) {
+            if (Test-Path ".\q2pro_x64\$dll") {
+              Copy-Item ".\q2pro_x64\$dll" .\
+              Write-Host "$dll found and copied"
+              $isccDefines += "/D$($optionalDlls[$dll])"
+            } else {
+              Write-Host "$dll not found - skipping (optional)"
+            }
+          }
+          
+          $env:ISCC_DEFINES = $isccDefines -join " "
 
       # 4. Actualizar versión en .iss
       - name: Update version in .iss
@@ -71,8 +90,8 @@ jobs:
       - name: Build Installer
         run: |
           $isccArgs = @("ddayinstaller.iss")
-          if ($env:HAS_DISCORD_SDK) {
-            $isccArgs += "/DIncludeDiscordSDK"
+          if ($env:ISCC_DEFINES) {
+            $isccArgs += $env:ISCC_DEFINES -split " "
           }
           iscc @isccArgs
         shell: pwsh
