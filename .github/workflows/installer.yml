@@ -20,44 +20,7 @@ jobs:
       - name: Checkout installer repo (self)
         uses: actions/checkout@v4
 
-      # 1. Compilar gamex86.dll desde release-dll
-      - name: Checkout release-dll source
-        uses: actions/checkout@v4
-        with:
-          repository: ddaychile/release-dll
-          path: ./mod_source
-
-      - name: Fix hardcoded paths in .vcxproj
-        run: |
-          cd ./mod_source
-          powershell -NoProfile -Command "(Get-Content dday.vcxproj) -replace 'C:\\\\Quake2\\\\dday\\\\', '..\\mod_binaries\\' | Set-Content dday.vcxproj"
-
-      - name: Compile gamex86.dll (MSVC x86 Release)
-        run: |
-          cd ./mod_source
-          # Find Visual Studio 2022 installation path
-          $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-          if (-not $vsPath) {
-            Write-Error "Visual Studio 2022 with C++ workload not found"
-            exit 1
-          }
-          $msbuildPath = Join-Path $vsPath "Msbuild\Current\Bin\msbuild.exe"
-          if (-not (Test-Path $msbuildPath)) {
-            Write-Error "msbuild.exe not found at $msbuildPath"
-            exit 1
-          }
-          $vcvarsPath = Join-Path $vsPath "VC\Auxiliary\Build\vcvarsall.bat"
-          if (-not (Test-Path $vcvarsPath)) {
-            Write-Error "vcvarsall.bat not found at $vcvarsPath"
-            exit 1
-          }
-          # Create a batch file to avoid quoting issues
-          $batchContent = "call `"$vcvarsPath`" x86`n`"$msbuildPath`" dday.vcxproj /p:Configuration=Release /p:Platform=Win32 /p:OutDir=`"..\mod_binaries\`" /p:IntDir=`"..\mod_binaries\obj\`""
-          Set-Content -Path build_gamex86.bat -Value $batchContent -Encoding ASCII
-          cmd /c build_gamex86.bat
-        shell: pwsh
-
-      # 2. Descargar binarios q2pro (usar nombres de assets correctos)
+      # 1. Descargar binarios q2pro x64
       - name: Download q2pro x64 binaries
         run: |
           gh release download ${{ github.event.inputs.q2pro_tag }} --repo ddaychile/q2pro --pattern "q2pro-windows-x64.zip" --dir ./q2pro_x64
@@ -65,6 +28,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
+      # 2. Descargar binarios q2pro x86
       - name: Download q2pro x86 binaries
         run: |
           gh release download ${{ github.event.inputs.q2pro_tag }} --repo ddaychile/q2pro --pattern "q2pro-windows-x86.zip" --dir ./q2pro_x86
@@ -84,9 +48,6 @@ jobs:
           copy .\q2pro_x86\q2proded.exe .\q2proded.exe
           copy .\q2pro_x86\*.dll .\
           
-          # Mod gamex86.dll compilado
-          copy .\mod_binaries\gamex86.dll .\Dday Normandy\dday\gamex86.dll
-          
           # Discord SDK
           copy .\q2pro_x64\discord_game_sdk.dll .\ 2>nul || echo "Discord SDK no en artifacts"
 
@@ -94,17 +55,17 @@ jobs:
       - name: Update version in .iss
         run: |
           $version = "${{ github.event.inputs.q2pro_tag }}".TrimStart('r')
-          (Get-Content ddayinstaller.iss) -replace '#define MyAppVersion ".*"', '#define MyAppVersion "' + $version + '"' | Set-Content ddayinstaller.iss
+          (Get-Content ddayinstaller.iss) -replace '#define MyAppVersion ".*"', "#define MyAppVersion `"$version`"" | Set-Content ddayinstaller.iss
 
       # 5. Instalar Inno Setup via Chocolatey
       - name: Install Inno Setup
         run: choco install innosetup --version=6.2.2 -y
 
-      # 5. Compilar installer
+      # 6. Compilar installer
       - name: Build Installer
         run: iscc ddayinstaller.iss
 
-      # 6. Subir artifact
+      # 7. Subir artifact
       - name: Upload Installer
         uses: actions/upload-artifact@v4
         with:
