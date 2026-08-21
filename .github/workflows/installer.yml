@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout installer repo (self)
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       # 1. Descargar binarios q2pro x64
       - name: Download q2pro x64 binaries
